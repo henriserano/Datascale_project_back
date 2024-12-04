@@ -23,7 +23,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Exposer le port sur lequel Flask écoutera
-EXPOSE 5002
+EXPOSE 4000
 
 # Définir la commande par défaut pour exécuter l'application Flask
-CMD ["python", "Find_documents.py"]
+CMD ["python", "ServiceManager.py"]
