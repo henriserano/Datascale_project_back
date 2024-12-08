@@ -1,0 +1,6 @@
+flask
+flask-cors
+mistralai
+python-dotenv
+boto3
+openpyxl

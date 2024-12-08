@@ -1,29 +1,30 @@
-# Utiliser une image Python officielle comme base
+# Use an official Python runtime as a parent image
 FROM python:3.9-slim
 
-# Installer les dépendances système nécessaires
+# Set environment variables to prevent Python from buffering logs
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Set the working directory in the container
+WORKDIR /
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    libssl-dev \
-    libffi-dev \
-    python3-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Définir le répertoire de travail
-WORKDIR /
+# Copy the requirements file into the container
+COPY requirements.txt /app/
 
-# Copier les fichiers requirements.txt dans le conteneur
-COPY requirements.txt .
-
-# Installer les dépendances Python
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier le reste des fichiers de l'application dans le conteneur
-COPY . .
+# Copy the rest of the application code
+COPY . /
 
-# Exposer le port sur lequel Flask écoutera
+# Expose the Flask port
 EXPOSE 5003
 
-# Définir la commande par défaut pour exécuter l'application Flask
+# Set the default command to run the application
 CMD ["python", "Chat_completion.py"]
