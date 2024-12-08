@@ -26,4 +26,4 @@ COPY . .
 EXPOSE 5004
 
 # Définir la commande par défaut pour exécuter l'application Flask
-CMD ["python", "Agent_creation.py"]
+CMD ["python", "Renomer_document.py"]

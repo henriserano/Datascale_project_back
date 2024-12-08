@@ -1,6 +1,8 @@
-flask
+Flask
 flask-cors
 mistralai
 python-dotenv
 boto3
+botocore
+pandas
 openpyxl
