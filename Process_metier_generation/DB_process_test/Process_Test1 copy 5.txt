@@ -1,0 +1,2 @@
+6. Processus de développement de produit
+Un besoin est identifié par le département marketing. Une équipe projet est formée pour concevoir le produit, définir les spécifications techniques, et réaliser un prototype. Après validation, le prototype entre en phase de production pilote pour tests. Les retours sont analysés, et le produit final est lancé sur le marché. Un suivi post-lancement est réalisé pour garantir la satisfaction client.

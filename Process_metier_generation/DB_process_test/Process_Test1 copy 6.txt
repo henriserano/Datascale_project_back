@@ -1,0 +1,2 @@
+4. Processus d'approvisionnement en matières premières
+Le service logistique identifie les besoins en matières premières via des seuils de stock minimum. Une demande d’achat est générée et envoyée au fournisseur agréé. Après validation des conditions commerciales, la commande est expédiée par le fournisseur. À la réception, la qualité des matières est contrôlée avant d’être ajoutée au stock. En cas de non-conformité, un retour fournisseur est déclenché.

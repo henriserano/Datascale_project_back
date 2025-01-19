@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
+                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
+                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI" 
+                   id="Definitions_ProcessusApprovisionnementMatieres" 
+                   targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <bpmn:process id="Process_ApprovisionnementMatieresPremieres" isExecutable="false">
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_IdentificationBesoins" name="Identification des besoins en matières premières">
+      <bpmn:outgoing>Flow_GenerationDemandeAchat</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Task: Génération de la demande d'achat -->
+    <bpmn:task id="Task_GenerationDemandeAchat" name="Génération de la demande d'achat">
+      <bpmn:incoming>Flow_GenerationDemandeAchat</bpmn:incoming>
+      <bpmn:outgoing>Flow_ValidationConditions</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Validation des conditions commerciales -->
+    <bpmn:task id="Task_ValidationConditions" name="Validation des conditions commerciales">
+      <bpmn:incoming>Flow_ValidationConditions</bpmn:incoming>
+      <bpmn:outgoing>Flow_CommandeExpediee</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Commande expédiée par le fournisseur -->
+    <bpmn:task id="Task_CommandeExpediee" name="Commande expédiée par le fournisseur">
+      <bpmn:incoming>Flow_CommandeExpediee</bpmn:incoming>
+      <bpmn:outgoing>Flow_ControleQualite</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Contrôle qualité des matières reçues -->
+    <bpmn:task id="Task_ControleQualite" name="Contrôle qualité des matières reçues">
+      <bpmn:incoming>Flow_ControleQualite</bpmn:incoming>
+      <bpmn:outgoing>Flow_ConformeAuStock</bpmn:outgoing>
+      <bpmn:outgoing>Flow_NonConformiteRetour</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Gateway: Conformité des matières -->
+    <bpmn:exclusiveGateway id="Gateway_Conformite" name="Conformité des matières ?">
+      <bpmn:incoming>Flow_ConformeAuStock</bpmn:incoming>
+      <bpmn:incoming>Flow_NonConformiteRetour</bpmn:incoming>
+      <bpmn:outgoing>Flow_AjoutAuStock</bpmn:outgoing>
+      <bpmn:outgoing>Flow_RetourFournisseur</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Task: Ajout au stock -->
+    <bpmn:task id="Task_AjoutAuStock" name="Ajout au stock">
+      <bpmn:incoming>Flow_AjoutAuStock</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndEventMatiereAjoutee</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Retour fournisseur -->
+    <bpmn:task id="Task_RetourFournisseur" name="Retour fournisseur">
+      <bpmn:incoming>Flow_RetourFournisseur</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndEventRetourFournisseur</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- End Events -->
+    <bpmn:endEvent id="EndEvent_MatiereAjoutee" name="Matières ajoutées au stock">
+      <bpmn:incoming>Flow_EndEventMatiereAjoutee</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_RetourFournisseur" name="Retour fournisseur effectué">
+      <bpmn:incoming>Flow_EndEventRetourFournisseur</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_GenerationDemandeAchat" sourceRef="StartEvent_IdentificationBesoins" targetRef="Task_GenerationDemandeAchat" />
+    <bpmn:sequenceFlow id="Flow_ValidationConditions" sourceRef="Task_GenerationDemandeAchat" targetRef="Task_ValidationConditions" />
+    <bpmn:sequenceFlow id="Flow_CommandeExpediee" sourceRef="Task_ValidationConditions" targetRef="Task_CommandeExpediee" />
+    <bpmn:sequenceFlow id="Flow_ControleQualite" sourceRef="Task_CommandeExpediee" targetRef="Task_ControleQualite" />
+    <bpmn:sequenceFlow id="Flow_ConformeAuStock" sourceRef="Task_ControleQualite" targetRef="Gateway_Conformite" />
+    <bpmn:sequenceFlow id="Flow_NonConformiteRetour" sourceRef="Task_ControleQualite" targetRef="Gateway_Conformite" />
+    <bpmn:sequenceFlow id="Flow_AjoutAuStock" sourceRef="Gateway_Conformite" targetRef="Task_AjoutAuStock" />
+    <bpmn:sequenceFlow id="Flow_RetourFournisseur" sourceRef="Gateway_Conformite" targetRef="Task_RetourFournisseur" />
+    <bpmn:sequenceFlow id="Flow_EndEventMatiereAjoutee" sourceRef="Task_AjoutAuStock" targetRef="EndEvent_MatiereAjoutee" />
+    <bpmn:sequenceFlow id="Flow_EndEventRetourFournisseur" sourceRef="Task_RetourFournisseur" targetRef="EndEvent_RetourFournisseur" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_ApprovisionnementMatieres">
+    <bpmndi:BPMNPlane id="BPMNPlane_ApprovisionnementMatieres" bpmnElement="Process_ApprovisionnementMatieresPremieres">
+      <!-- BPMN Shapes -->
+      <bpmndi:BPMNShape id="Shape_StartEvent_IdentificationBesoins" bpmnElement="StartEvent_IdentificationBesoins">
+        <dc:Bounds x="100" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_GenerationDemandeAchat" bpmnElement="Task_GenerationDemandeAchat">
+        <dc:Bounds x="200" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ValidationConditions" bpmnElement="Task_ValidationConditions">
+        <dc:Bounds x="350" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CommandeExpediee" bpmnElement="Task_CommandeExpediee">
+        <dc:Bounds x="500" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ControleQualite" bpmnElement="Task_ControleQualite">
+        <dc:Bounds x="650" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_Conformite" bpmnElement="Gateway_Conformite">
+        <dc:Bounds x="800" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_AjoutAuStock" bpmnElement="Task_AjoutAuStock">
+        <dc:Bounds x="900" y="50" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_RetourFournisseur" bpmnElement="Task_RetourFournisseur">
+        <dc:Bounds x="900" y="150" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_MatiereAjoutee" bpmnElement="EndEvent_MatiereAjoutee">
+        <dc:Bounds x="1050" y="65" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_RetourFournisseur" bpmnElement="EndEvent_RetourFournisseur">
+        <dc:Bounds x="1050" y="165" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- BPMN Edges -->
+      <bpmndi:BPMNEdge id="Edge_Flow_GenerationDemandeAchat" bpmnElement="Flow_GenerationDemandeAchat">
+        <di:waypoint x="136" y="118" />
+        <di:waypoint x="200" y="118" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ValidationConditions" bpmnElement="Flow_ValidationConditions">
+        <di:waypoint x="300" y="120" />
+        <di:waypoint x="350" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_CommandeExpediee" bpmnElement="Flow_CommandeExpediee">
+        <di:waypoint x="450" y="120" />
+        <di:waypoint x="500" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ControleQualite" bpmnElement="Flow_ControleQualite">
+        <di:waypoint x="600" y="120" />
+        <di:waypoint x="650" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ConformeAuStock" bpmnElement="Flow_ConformeAuStock">
+        <di:waypoint x="750" y="120" />
+        <di:waypoint x="800" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_NonConformiteRetour" bpmnElement="Flow_NonConformiteRetour">
+        <di:waypoint x="750" y="120" />
+        <di:waypoint x="800" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_AjoutAuStock" bpmnElement="Flow_AjoutAuStock">
+        <di:waypoint x="850" y="70" />
+        <di:waypoint x="900" y="70" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_RetourFournisseur" bpmnElement="Flow_RetourFournisseur">
+        <di:waypoint x="850" y="170" />
+        <di:waypoint x="900" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EndEventMatiereAjoutee" bpmnElement="Flow_EndEventMatiereAjoutee">
+        <di:waypoint x="1000" y="70" />
+        <di:waypoint x="1050" y="70" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EndEventRetourFournisseur" bpmnElement="Flow_EndEventRetourFournisseur">
+        <di:waypoint x="1000" y="170" />
+        <di:waypoint x="1050" y="170" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

@@ -1,0 +1,3 @@
+1. Processus de gestion des réclamations clients
+Lorsqu'un client soumet une réclamation via le site web, un ticket est automatiquement créé et assigné à un responsable du service client. Le responsable analyse la réclamation, contacte le client pour des précisions si nécessaire, et propose une solution. Si la solution est acceptée, le ticket est clôturé. Sinon, il est escaladé à un niveau supérieur. Des statistiques mensuelles sont générées pour analyser les réclamations récurrentes.
+

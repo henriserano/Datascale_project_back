@@ -1,0 +1,2 @@
+10. Processus de gestion des risques projet
+Pendant la phase de planification d’un projet, les risques sont identifiés et classés par ordre de criticité. Pour chaque risque, une stratégie de mitigation est définie. Pendant l’exécution du projet, des points de contrôle réguliers sont réalisés pour évaluer si les risques sont maîtrisés. En cas de survenance, un plan de réponse est activé pour limiter l’impact et ajuster les plannings si nécessaire.

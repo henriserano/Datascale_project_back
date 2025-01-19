@@ -1,0 +1,111 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_ClaimManagement" targetnamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_ClaimManagement" isexecutable="true">
+    <!-- Start Event -->
+    <bpmn:startevent id="StartEvent_SubmitClaim">
+      <bpmn:outgoing>Flow_TicketCreation</bpmn:outgoing>
+    </bpmn:startevent>
+
+    <!-- Task: Create Ticket -->
+    <bpmn:task id="Task_CreateTicket" name="Create Ticket">
+      <bpmn:incoming>Flow_TicketCreation</bpmn:incoming>
+      <bpmn:outgoing>Flow_AssignTicket</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Assign Ticket -->
+    <bpmn:task id="Task_AssignTicket" name="Assign Ticket to Service Representative">
+      <bpmn:incoming>Flow_AssignTicket</bpmn:incoming>
+      <bpmn:outgoing>Flow_AnalyzeClaim</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Analyze Claim -->
+    <bpmn:task id="Task_AnalyzeClaim" name="Analyze Claim">
+      <bpmn:incoming>Flow_AnalyzeClaim</bpmn:incoming>
+      <bpmn:outgoing>Flow_ContactClient</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Contact Client -->
+    <bpmn:task id="Task_ContactClient" name="Contact Client">
+      <bpmn:incoming>Flow_ContactClient</bpmn:incoming>
+      <bpmn:outgoing>Flow_ProposeSolution</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Propose Solution -->
+    <bpmn:task id="Task_ProposeSolution" name="Propose Solution">
+      <bpmn:incoming>Flow_ProposeSolution</bpmn:incoming>
+      <bpmn:outgoing>Flow_CheckSolutionAcceptance</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Gateway: Solution Accepted? -->
+    <bpmn:exclusivegateway id="Gateway_SolutionAccepted" name="Solution Accepted?">
+      <bpmn:incoming>Flow_CheckSolutionAcceptance</bpmn:incoming>
+      <bpmn:outgoing>Flow_CloseTicket</bpmn:outgoing>
+      <bpmn:outgoing>Flow_EscalateClaim</bpmn:outgoing>
+    </bpmn:exclusivegateway>
+
+    <!-- Task: Close Ticket -->
+    <bpmn:task id="Task_CloseTicket" name="Close Ticket">
+      <bpmn:incoming>Flow_CloseTicket</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndProcess</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Escalate Claim -->
+    <bpmn:task id="Task_EscalateClaim" name="Escalate Claim">
+      <bpmn:incoming>Flow_EscalateClaim</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndProcess</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- End Event -->
+    <bpmn:endevent id="EndEvent_ProcessComplete">
+      <bpmn:incoming>Flow_EndProcess</bpmn:incoming>
+    </bpmn:endevent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceflow id="Flow_TicketCreation" sourceRef="StartEvent_SubmitClaim" targetRef="Task_CreateTicket"/>
+    <bpmn:sequenceflow id="Flow_AssignTicket" sourceRef="Task_CreateTicket" targetRef="Task_AssignTicket"/>
+    <bpmn:sequenceflow id="Flow_AnalyzeClaim" sourceRef="Task_AssignTicket" targetRef="Task_AnalyzeClaim"/>
+    <bpmn:sequenceflow id="Flow_ContactClient" sourceRef="Task_AnalyzeClaim" targetRef="Task_ContactClient"/>
+    <bpmn:sequenceflow id="Flow_ProposeSolution" sourceRef="Task_ContactClient" targetRef="Task_ProposeSolution"/>
+    <bpmn:sequenceflow id="Flow_CheckSolutionAcceptance" sourceRef="Task_ProposeSolution" targetRef="Gateway_SolutionAccepted"/>
+    <bpmn:sequenceflow id="Flow_CloseTicket" sourceRef="Gateway_SolutionAccepted" targetRef="Task_CloseTicket"/>
+    <bpmn:sequenceflow id="Flow_EscalateClaim" sourceRef="Gateway_SolutionAccepted" targetRef="Task_EscalateClaim"/>
+    <bpmn:sequenceflow id="Flow_EndProcess" sourceRef="Task_CloseTicket" targetRef="EndEvent_ProcessComplete"/>
+    <bpmn:sequenceflow id="Flow_EndProcessEscalation" sourceRef="Task_EscalateClaim" targetRef="EndEvent_ProcessComplete"/>
+  </bpmn:process>
+
+  <bpmndi:bpmndiagram id="BPMNDiagram_ClaimManagement">
+    <bpmndi:bpmnplane id="BPMNPlane_ClaimManagement" bpmnelement="Process_ClaimManagement">
+      <!-- BPMN Shapes and Coordinates -->
+      <bpmndi:bpmnshape id="Shape_StartEvent_SubmitClaim" bpmnelement="StartEvent_SubmitClaim">
+        <dc:bounds x="100" y="100" width="36" height="36"/>
+      </bpmndi:bpmnshape>
+      <bpmndi:bpmnshape id="Shape_Task_CreateTicket" bpmnelement="Task_CreateTicket">
+        <dc:bounds x="200" y="90" width="100" height="60"/>
+      </bpmndi:bpmnshape>
+      <bpmndi:bpmnshape id="Shape_Task_AssignTicket" bpmnelement="Task_AssignTicket">
+        <dc:bounds x="350" y="90" width="100" height="60"/>
+      </bpmndi:bpmnshape>
+      <bpmndi:bpmnshape id="Shape_Task_AnalyzeClaim" bpmnelement="Task_AnalyzeClaim">
+        <dc:bounds x="500" y="90" width="100" height="60"/>
+      </bpmndi:bpmnshape>
+      <bpmndi:bpmnshape id="Shape_Task_ContactClient" bpmnelement="Task_ContactClient">
+        <dc:bounds x="650" y="90" width="100" height="60"/>
+      </bpmndi:bpmnshape>
+      <bpmndi:bpmnshape id="Shape_Task_ProposeSolution" bpmnelement="Task_ProposeSolution">
+        <dc:bounds x="800" y="90" width="100" height="60"/>
+      </bpmndi:bpmnshape>
+      <bpmndi:bpmnshape id="Shape_Gateway_SolutionAccepted" bpmnelement="Gateway_SolutionAccepted">
+        <dc:bounds x="950" y="100" width="50" height="50"/>
+      </bpmndi:bpmnshape>
+      <bpmndi:bpmnshape id="Shape_Task_CloseTicket" bpmnelement="Task_CloseTicket">
+        <dc:bounds x="1050" y="70" width="100" height="60"/>
+      </bpmndi:bpmnshape>
+      <bpmndi:bpmnshape id="Shape_Task_EscalateClaim" bpmnelement="Task_EscalateClaim">
+        <dc:bounds x="1050" y="150" width="100" height="60"/>
+      </bpmndi:bpmnshape>
+      <bpmndi:bpmnshape id="Shape_EndEvent_ProcessComplete" bpmnelement="EndEvent_ProcessComplete">
+        <dc:bounds x="1200" y="100" width="36" height="36"/>
+      </bpmndi:bpmnshape>
+    </bpmndi:bpmnplane>
+  </bpmndi:bpmndiagram>
+</bpmn:definitions>

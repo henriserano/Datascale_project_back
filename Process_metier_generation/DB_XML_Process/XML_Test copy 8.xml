@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
+                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
+                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI" 
+                   id="Definitions_ProcessusIntegrationEmploye" 
+                   targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <bpmn:process id="Process_IntegrationNouvelEmploye" isExecutable="false">
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_SignatureContrat" name="Signature du contrat">
+      <bpmn:outgoing>Flow_PreparationPoste</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Task: Préparation du poste de travail -->
+    <bpmn:task id="Task_PreparationPoste" name="Préparation du poste de travail">
+      <bpmn:incoming>Flow_PreparationPoste</bpmn:incoming>
+      <bpmn:outgoing>Flow_FormationAccueil</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Formation d'accueil -->
+    <bpmn:task id="Task_FormationAccueil" name="Formation d'accueil">
+      <bpmn:incoming>Flow_FormationAccueil</bpmn:incoming>
+      <bpmn:outgoing>Flow_DefinitionObjectifs</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Définition des objectifs et plan d'intégration -->
+    <bpmn:task id="Task_DefinitionObjectifs" name="Définition des objectifs et plan d'intégration">
+      <bpmn:incoming>Flow_DefinitionObjectifs</bpmn:incoming>
+      <bpmn:outgoing>Flow_PointsSuivi</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Points de suivi réguliers -->
+    <bpmn:task id="Task_PointsSuivi" name="Points de suivi réguliers">
+      <bpmn:incoming>Flow_PointsSuivi</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndEventIntegrationComplete</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- End Event -->
+    <bpmn:endEvent id="EndEvent_IntegrationComplete" name="Intégration complète">
+      <bpmn:incoming>Flow_EndEventIntegrationComplete</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_PreparationPoste" sourceRef="StartEvent_SignatureContrat" targetRef="Task_PreparationPoste" />
+    <bpmn:sequenceFlow id="Flow_FormationAccueil" sourceRef="Task_PreparationPoste" targetRef="Task_FormationAccueil" />
+    <bpmn:sequenceFlow id="Flow_DefinitionObjectifs" sourceRef="Task_FormationAccueil" targetRef="Task_DefinitionObjectifs" />
+    <bpmn:sequenceFlow id="Flow_PointsSuivi" sourceRef="Task_DefinitionObjectifs" targetRef="Task_PointsSuivi" />
+    <bpmn:sequenceFlow id="Flow_EndEventIntegrationComplete" sourceRef="Task_PointsSuivi" targetRef="EndEvent_IntegrationComplete" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_IntegrationNouvelEmploye">
+    <bpmndi:BPMNPlane id="BPMNPlane_IntegrationNouvelEmploye" bpmnElement="Process_IntegrationNouvelEmploye">
+      <!-- BPMN Shapes -->
+      <bpmndi:BPMNShape id="Shape_StartEvent_SignatureContrat" bpmnElement="StartEvent_SignatureContrat">
+        <dc:Bounds x="100" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PreparationPoste" bpmnElement="Task_PreparationPoste">
+        <dc:Bounds x="200" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_FormationAccueil" bpmnElement="Task_FormationAccueil">
+        <dc:Bounds x="350" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefinitionObjectifs" bpmnElement="Task_DefinitionObjectifs">
+        <dc:Bounds x="500" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PointsSuivi" bpmnElement="Task_PointsSuivi">
+        <dc:Bounds x="650" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_IntegrationComplete" bpmnElement="EndEvent_IntegrationComplete">
+        <dc:Bounds x="800" y="105" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- BPMN Edges -->
+      <bpmndi:BPMNEdge id="Edge_Flow_PreparationPoste" bpmnElement="Flow_PreparationPoste">
+        <di:waypoint x="136" y="118" />
+        <di:waypoint x="200" y="118" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_FormationAccueil" bpmnElement="Flow_FormationAccueil">
+        <di:waypoint x="300" y="120" />
+        <di:waypoint x="350" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DefinitionObjectifs" bpmnElement="Flow_DefinitionObjectifs">
+        <di:waypoint x="450" y="120" />
+        <di:waypoint x="500" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PointsSuivi" bpmnElement="Flow_PointsSuivi">
+        <di:waypoint x="600" y="120" />
+        <di:waypoint x="650" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EndEventIntegrationComplete" bpmnElement="Flow_EndEventIntegrationComplete">
+        <di:waypoint x="750" y="120" />
+        <di:waypoint x="800" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

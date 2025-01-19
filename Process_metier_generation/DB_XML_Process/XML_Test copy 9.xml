@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
+                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
+                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI" 
+                   id="Definitions_ProcessusMarketing" 
+                   targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <bpmn:process id="Process_GestionCampagnesMarketing" isExecutable="false">
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_ElaborationStrategie" name="Élaboration de la stratégie">
+      <bpmn:outgoing>Flow_PlanificationCampagne</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Task: Planification de la campagne -->
+    <bpmn:task id="Task_PlanificationCampagne" name="Planification de la campagne">
+      <bpmn:incoming>Flow_PlanificationCampagne</bpmn:incoming>
+      <bpmn:outgoing>Flow_MiseEnOeuvre</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Mise en œuvre de la campagne -->
+    <bpmn:task id="Task_MiseEnOeuvre" name="Mise en œuvre de la campagne">
+      <bpmn:incoming>Flow_MiseEnOeuvre</bpmn:incoming>
+      <bpmn:outgoing>Flow_AnalysePerformances</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Analyse des performances -->
+    <bpmn:task id="Task_AnalysePerformances" name="Analyse des performances">
+      <bpmn:incoming>Flow_AnalysePerformances</bpmn:incoming>
+      <bpmn:outgoing>Flow_OptimisationCampagnes</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Optimisation des campagnes -->
+    <bpmn:task id="Task_OptimisationCampagnes" name="Optimisation des campagnes">
+      <bpmn:incoming>Flow_OptimisationCampagnes</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndEventCampagneOptimisee</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- End Event -->
+    <bpmn:endEvent id="EndEvent_CampagneOptimisee" name="Campagne optimisée">
+      <bpmn:incoming>Flow_EndEventCampagneOptimisee</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_PlanificationCampagne" sourceRef="StartEvent_ElaborationStrategie" targetRef="Task_PlanificationCampagne" />
+    <bpmn:sequenceFlow id="Flow_MiseEnOeuvre" sourceRef="Task_PlanificationCampagne" targetRef="Task_MiseEnOeuvre" />
+    <bpmn:sequenceFlow id="Flow_AnalysePerformances" sourceRef="Task_MiseEnOeuvre" targetRef="Task_AnalysePerformances" />
+    <bpmn:sequenceFlow id="Flow_OptimisationCampagnes" sourceRef="Task_AnalysePerformances" targetRef="Task_OptimisationCampagnes" />
+    <bpmn:sequenceFlow id="Flow_EndEventCampagneOptimisee" sourceRef="Task_OptimisationCampagnes" targetRef="EndEvent_CampagneOptimisee" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_GestionCampagnesMarketing">
+    <bpmndi:BPMNPlane id="BPMNPlane_GestionCampagnesMarketing" bpmnElement="Process_GestionCampagnesMarketing">
+      <!-- BPMN Shapes -->
+      <bpmndi:BPMNShape id="Shape_StartEvent_ElaborationStrategie" bpmnElement="StartEvent_ElaborationStrategie">
+        <dc:Bounds x="100" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PlanificationCampagne" bpmnElement="Task_PlanificationCampagne">
+        <dc:Bounds x="200" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_MiseEnOeuvre" bpmnElement="Task_MiseEnOeuvre">
+        <dc:Bounds x="350" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_AnalysePerformances" bpmnElement="Task_AnalysePerformances">
+        <dc:Bounds x="500" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_OptimisationCampagnes" bpmnElement="Task_OptimisationCampagnes">
+        <dc:Bounds x="650" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_CampagneOptimisee" bpmnElement="EndEvent_CampagneOptimisee">
+        <dc:Bounds x="800" y="105" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- BPMN Edges -->
+      <bpmndi:BPMNEdge id="Edge_Flow_PlanificationCampagne" bpmnElement="Flow_PlanificationCampagne">
+        <di:waypoint x="136" y="118" />
+        <di:waypoint x="200" y="118" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_MiseEnOeuvre" bpmnElement="Flow_MiseEnOeuvre">
+        <di:waypoint x="300" y="120" />
+        <di:waypoint x="350" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_AnalysePerformances" bpmnElement="Flow_AnalysePerformances">
+        <di:waypoint x="450" y="120" />
+        <di:waypoint x="500" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_OptimisationCampagnes" bpmnElement="Flow_OptimisationCampagnes">
+        <di:waypoint x="600" y="120" />
+        <di:waypoint x="650" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EndEventCampagneOptimisee" bpmnElement="Flow_EndEventCampagneOptimisee">
+        <di:waypoint x="750" y="120" />
+        <di:waypoint x="800" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
+                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
+                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI" 
+                   id="Definitions_ProcessusGestionIncidents" 
+                   targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <bpmn:process id="Process_GestionIncidentsInformatiques" isExecutable="false">
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_SignalementIncident" name="Signalement de l'incident">
+      <bpmn:outgoing>Flow_AssignationTechnicien</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Task: Assignation d'un technicien -->
+    <bpmn:task id="Task_AssignationTechnicien" name="Assignation d'un technicien">
+      <bpmn:incoming>Flow_AssignationTechnicien</bpmn:incoming>
+      <bpmn:outgoing>Flow_DiagnosticIncident</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Diagnostic de l'incident -->
+    <bpmn:task id="Task_DiagnosticIncident" name="Diagnostic de l'incident">
+      <bpmn:incoming>Flow_DiagnosticIncident</bpmn:incoming>
+      <bpmn:outgoing>Flow_SolutionStandard</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ProblemeComplexe</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Gateway: Problème complexe ? -->
+    <bpmn:exclusiveGateway id="Gateway_ProblemeComplexe" name="Problème complexe ?">
+      <bpmn:incoming>Flow_SolutionStandard</bpmn:incoming>
+      <bpmn:incoming>Flow_ProblemeComplexe</bpmn:incoming>
+      <bpmn:outgoing>Flow_TransmissionExpert</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ResolutionTicket</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Task: Transmission à un expert -->
+    <bpmn:task id="Task_TransmissionExpert" name="Transmission à un expert">
+      <bpmn:incoming>Flow_TransmissionExpert</bpmn:incoming>
+      <bpmn:outgoing>Flow_ResolutionTicketExpert</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Résolution du ticket -->
+    <bpmn:task id="Task_ResolutionTicket" name="Résolution du ticket">
+      <bpmn:incoming>Flow_ResolutionTicket</bpmn:incoming>
+      <bpmn:incoming>Flow_ResolutionTicketExpert</bpmn:incoming>
+      <bpmn:outgoing>Flow_ClotureTicket</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Clôture du ticket et génération de rapport -->
+    <bpmn:task id="Task_ClotureTicket" name="Clôture du ticket et génération de rapport">
+      <bpmn:incoming>Flow_ClotureTicket</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndEventTicketClos</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- End Event -->
+    <bpmn:endEvent id="EndEvent_TicketClos" name="Ticket clos">
+      <bpmn:incoming>Flow_EndEventTicketClos</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_AssignationTechnicien" sourceRef="StartEvent_SignalementIncident" targetRef="Task_AssignationTechnicien" />
+    <bpmn:sequenceFlow id="Flow_DiagnosticIncident" sourceRef="Task_AssignationTechnicien" targetRef="Task_DiagnosticIncident" />
+    <bpmn:sequenceFlow id="Flow_SolutionStandard" sourceRef="Task_DiagnosticIncident" targetRef="Gateway_ProblemeComplexe" />
+    <bpmn:sequenceFlow id="Flow_ProblemeComplexe" sourceRef="Task_DiagnosticIncident" targetRef="Gateway_ProblemeComplexe" />
+    <bpmn:sequenceFlow id="Flow_TransmissionExpert" sourceRef="Gateway_ProblemeComplexe" targetRef="Task_TransmissionExpert" />
+    <bpmn:sequenceFlow id="Flow_ResolutionTicketExpert" sourceRef="Task_TransmissionExpert" targetRef="Task_ResolutionTicket" />
+    <bpmn:sequenceFlow id="Flow_ResolutionTicket" sourceRef="Gateway_ProblemeComplexe" targetRef="Task_ResolutionTicket" />
+    <bpmn:sequenceFlow id="Flow_ClotureTicket" sourceRef="Task_ResolutionTicket" targetRef="Task_ClotureTicket" />
+    <bpmn:sequenceFlow id="Flow_EndEventTicketClos" sourceRef="Task_ClotureTicket" targetRef="EndEvent_TicketClos" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_GestionIncidentsInformatiques">
+    <bpmndi:BPMNPlane id="BPMNPlane_GestionIncidentsInformatiques" bpmnElement="Process_GestionIncidentsInformatiques">
+      <!-- BPMN Shapes -->
+      <bpmndi:BPMNShape id="Shape_StartEvent_SignalementIncident" bpmnElement="StartEvent_SignalementIncident">
+        <dc:Bounds x="100" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_AssignationTechnicien" bpmnElement="Task_AssignationTechnicien">
+        <dc:Bounds x="200" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DiagnosticIncident" bpmnElement="Task_DiagnosticIncident">
+        <dc:Bounds x="350" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_ProblemeComplexe" bpmnElement="Gateway_ProblemeComplexe">
+        <dc:Bounds x="500" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_TransmissionExpert" bpmnElement="Task_TransmissionExpert">
+        <dc:Bounds x="600" y="50" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ResolutionTicket" bpmnElement="Task_ResolutionTicket">
+        <dc:Bounds x="600" y="150" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ClotureTicket" bpmnElement="Task_ClotureTicket">
+        <dc:Bounds x="750" y="150" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_TicketClos" bpmnElement="EndEvent_TicketClos">
+        <dc:Bounds x="900" y="165" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- BPMN Edges -->
+      <bpmndi:BPMNEdge id="Edge_Flow_AssignationTechnicien" bpmnElement="Flow_AssignationTechnicien">
+        <di:waypoint x="136" y="118" />
+        <di:waypoint x="200" y="118" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DiagnosticIncident" bpmnElement="Flow_DiagnosticIncident">
+        <di:waypoint x="300" y="120" />
+        <di:waypoint x="350" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SolutionStandard" bpmnElement="Flow_SolutionStandard">
+        <di:waypoint x="450" y="120" />
+        <di:waypoint x="500" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ProblemeComplexe" bpmnElement="Flow_ProblemeComplexe">
+        <di:waypoint x="450" y="120" />
+        <di:waypoint x="500" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_TransmissionExpert" bpmnElement="Flow_TransmissionExpert">
+        <di:waypoint x="550" y="70" />
+        <di:waypoint x="600" y="70" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ResolutionTicketExpert" bpmnElement="Flow_ResolutionTicketExpert">
+        <di:waypoint x="700" y="180" />
+        <di:waypoint x="600" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ResolutionTicket" bpmnElement="Flow_ResolutionTicket">
+        <di:waypoint x="550" y="180" />
+        <di:waypoint x="600" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ClotureTicket" bpmnElement="Flow_ClotureTicket">
+        <di:waypoint x="700" y="180" />
+        <di:waypoint x="750" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EndEventTicketClos" bpmnElement="Flow_EndEventTicketClos">
+        <di:waypoint x="850" y="180" />
+        <di:waypoint x="900" y="180" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

@@ -84,8 +84,6 @@ def extract_text_from_bucket_discussion(bucket_name, id_user, id_discussion):
         print(f"Error retrieving files from bucket {bucket_name}: {e}")
         return
 
-    
-
 def upload_to_s3(file_obj, user_id, conversation_id):
     """
     Upload a file to S3 inside a folder structure based on user ID and conversation ID.

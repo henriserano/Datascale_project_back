@@ -1,0 +1,2 @@
+3. Processus de gestion des commandes e-commerce
+Lorsqu’un client passe une commande en ligne, le système vérifie les stocks et envoie une confirmation. Si le paiement est validé, la commande est préparée en entrepôt, puis expédiée via un transporteur. Un email de suivi est envoyé au client. En cas de retour, le produit est vérifié pour déterminer son état, et un remboursement ou un échange est proposé au client.

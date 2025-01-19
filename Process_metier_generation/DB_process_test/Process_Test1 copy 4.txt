@@ -1,0 +1,3 @@
+5. Processus de traitement des factures fournisseurs
+Une facture est reçue par le service comptabilité, qui vérifie qu’elle correspond à une commande passée. Si les informations concordent, la facture est approuvée pour paiement. Si des écarts sont identifiés, une clarification est demandée au fournisseur. Une fois validée, la facture est transmise pour paiement, puis archivée pour audit ou consultation future.
+

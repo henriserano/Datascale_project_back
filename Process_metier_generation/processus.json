@@ -1,0 +1,21 @@
+{
+    "process": {
+        "name": "Processus de gestion des commandes",
+        "Etape_Workflow": [
+            {
+                "name": "Recupération des documents",
+                "Type": "INPUT",
+                "nextStep": "Vérification des documents"
+            },
+            {
+                "name": "Vérification des documents",
+                "Type": "XOR",
+                "nextStep": "Validation finale"
+            },
+            {
+                "name": "Validation finale",
+                "Type": "END"
+            }
+        ]
+    }
+}

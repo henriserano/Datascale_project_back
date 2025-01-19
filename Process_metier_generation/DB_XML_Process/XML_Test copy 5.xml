@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
+                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
+                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI" 
+                   id="Definitions_ProcessusTraitementFactures" 
+                   targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <bpmn:process id="Process_TraitementFacturesFournisseurs" isExecutable="false">
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_ReceptionFacture" name="Réception de la facture">
+      <bpmn:outgoing>Flow_VerificationCommande</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Task: Vérification de la commande -->
+    <bpmn:task id="Task_VerificationCommande" name="Vérification de la commande">
+      <bpmn:incoming>Flow_VerificationCommande</bpmn:incoming>
+      <bpmn:outgoing>Flow_EcartIdentifie</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ValidationPaiement</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Gateway: Écarts identifiés ? -->
+    <bpmn:exclusiveGateway id="Gateway_EcartIdentifie" name="Écarts identifiés ?">
+      <bpmn:incoming>Flow_EcartIdentifie</bpmn:incoming>
+      <bpmn:outgoing>Flow_ClarificationFournisseur</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ValidationPaiement</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Task: Clarification auprès du fournisseur -->
+    <bpmn:task id="Task_ClarificationFournisseur" name="Clarification auprès du fournisseur">
+      <bpmn:incoming>Flow_ClarificationFournisseur</bpmn:incoming>
+      <bpmn:outgoing>Flow_RetourVerificationCommande</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Sequence flow: Retour vers vérification de la commande -->
+    <bpmn:sequenceFlow id="Flow_RetourVerificationCommande" sourceRef="Task_ClarificationFournisseur" targetRef="Task_VerificationCommande" />
+
+    <!-- Task: Validation pour paiement -->
+    <bpmn:task id="Task_ValidationPaiement" name="Validation pour paiement">
+      <bpmn:incoming>Flow_ValidationPaiement</bpmn:incoming>
+      <bpmn:outgoing>Flow_TransmissionPaiement</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Transmission pour paiement -->
+    <bpmn:task id="Task_TransmissionPaiement" name="Transmission pour paiement">
+      <bpmn:incoming>Flow_TransmissionPaiement</bpmn:incoming>
+      <bpmn:outgoing>Flow_ArchivageFacture</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Archivage de la facture -->
+    <bpmn:task id="Task_ArchivageFacture" name="Archivage de la facture">
+      <bpmn:incoming>Flow_ArchivageFacture</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndEventFactureTraitee</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- End Event -->
+    <bpmn:endEvent id="EndEvent_FactureTraitee" name="Facture traitée">
+      <bpmn:incoming>Flow_EndEventFactureTraitee</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_VerificationCommande" sourceRef="StartEvent_ReceptionFacture" targetRef="Task_VerificationCommande" />
+    <bpmn:sequenceFlow id="Flow_EcartIdentifie" sourceRef="Task_VerificationCommande" targetRef="Gateway_EcartIdentifie" />
+    <bpmn:sequenceFlow id="Flow_ClarificationFournisseur" sourceRef="Gateway_EcartIdentifie" targetRef="Task_ClarificationFournisseur" />
+    <bpmn:sequenceFlow id="Flow_ValidationPaiement" sourceRef="Gateway_EcartIdentifie" targetRef="Task_ValidationPaiement" />
+    <bpmn:sequenceFlow id="Flow_TransmissionPaiement" sourceRef="Task_ValidationPaiement" targetRef="Task_TransmissionPaiement" />
+    <bpmn:sequenceFlow id="Flow_ArchivageFacture" sourceRef="Task_TransmissionPaiement" targetRef="Task_ArchivageFacture" />
+    <bpmn:sequenceFlow id="Flow_EndEventFactureTraitee" sourceRef="Task_ArchivageFacture" targetRef="EndEvent_FactureTraitee" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_TraitementFactures">
+    <bpmndi:BPMNPlane id="BPMNPlane_TraitementFactures" bpmnElement="Process_TraitementFacturesFournisseurs">
+      <!-- BPMN Shapes -->
+      <bpmndi:BPMNShape id="Shape_StartEvent_ReceptionFacture" bpmnElement="StartEvent_ReceptionFacture">
+        <dc:Bounds x="100" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_VerificationCommande" bpmnElement="Task_VerificationCommande">
+        <dc:Bounds x="200" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_EcartIdentifie" bpmnElement="Gateway_EcartIdentifie">
+        <dc:Bounds x="350" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ClarificationFournisseur" bpmnElement="Task_ClarificationFournisseur">
+        <dc:Bounds x="450" y="50" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ValidationPaiement" bpmnElement="Task_ValidationPaiement">
+        <dc:Bounds x="450" y="150" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_TransmissionPaiement" bpmnElement="Task_TransmissionPaiement">
+        <dc:Bounds x="600" y="150" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ArchivageFacture" bpmnElement="Task_ArchivageFacture">
+        <dc:Bounds x="750" y="150" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_FactureTraitee" bpmnElement="EndEvent_FactureTraitee">
+        <dc:Bounds x="900" y="165" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- BPMN Edges -->
+      <bpmndi:BPMNEdge id="Edge_Flow_VerificationCommande" bpmnElement="Flow_VerificationCommande">
+        <di:waypoint x="136" y="118" />
+        <di:waypoint x="200" y="118" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EcartIdentifie" bpmnElement="Flow_EcartIdentifie">
+        <di:waypoint x="300" y="120" />
+        <di:waypoint x="350" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ClarificationFournisseur" bpmnElement="Flow_ClarificationFournisseur">
+        <di:waypoint x="375" y="95" />
+        <di:waypoint x="450" y="80" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ValidationPaiement" bpmnElement="Flow_ValidationPaiement">
+        <di:waypoint x="375" y="145" />
+        <di:waypoint x="450" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_TransmissionPaiement" bpmnElement="Flow_TransmissionPaiement">
+        <di:waypoint x="550" y="180" />
+        <di:waypoint x="600" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ArchivageFacture" bpmnElement="Flow_ArchivageFacture">
+        <di:waypoint x="700" y="180" />
+        <di:waypoint x="750" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EndEventFactureTraitee" bpmnElement="Flow_EndEventFactureTraitee">
+        <di:waypoint x="850" y="180" />
+        <di:waypoint x="900" y="180" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

@@ -4,7 +4,6 @@ from mistralai import Mistral
 from mistralai.models import UserMessage, AssistantMessage
 from dotenv import load_dotenv
 
-# Charger la clé API depuis un fichier .env
 load_dotenv()
 api_key = os.getenv("MISTRAL_AI_KEY")
 # Initialiser le client Mistral

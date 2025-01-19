@@ -1,0 +1,3 @@
+7. Processus de gestion des incidents informatiques
+Lorsqu'un utilisateur signale un incident via un système de ticketing, un technicien est assigné au problème. Le technicien diagnostique la cause et applique une solution standard si le problème est connu. Si le problème est complexe, il est transmis à un expert. Une fois résolu, le ticket est clôturé, et un rapport est généré pour identifier les tendances ou récurrences.
+
