@@ -2,3 +2,4 @@
 Process_metier_generation/PROD/.env
 Call_Chat/.env
 Agent_creation/.env
+Process_metier_generation/DEV_OPENAI.ipynb
