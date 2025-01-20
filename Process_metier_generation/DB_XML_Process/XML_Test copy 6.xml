@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetnamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_DeveloppementProduit" isexecutable="false">
+    <bpmn:startEvent id="StartEvent_IdentificationBesoin">
+      <bpmn:outgoing>Flow_IdentificationToEquipe</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="Task_FormationEquipe" name="Formation de l'équipe projet">
+      <bpmn:incoming>Flow_IdentificationToEquipe</bpmn:incoming>
+      <bpmn:outgoing>Flow_EquipeToConception</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_ConceptionProduit" name="Conception du produit">
+      <bpmn:incoming>Flow_EquipeToConception</bpmn:incoming>
+      <bpmn:outgoing>Flow_ConceptionToPrototype</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_RealisationPrototype" name="Réalisation du prototype">
+      <bpmn:incoming>Flow_ConceptionToPrototype</bpmn:incoming>
+      <bpmn:outgoing>Flow_PrototypeToValidation</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_ValidationPrototype" name="Validation du prototype">
+      <bpmn:incoming>Flow_PrototypeToValidation</bpmn:incoming>
+      <bpmn:outgoing>Flow_ValidationToProductionPilote</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_ProductionPilote" name="Production pilote et tests">
+      <bpmn:incoming>Flow_ValidationToProductionPilote</bpmn:incoming>
+      <bpmn:outgoing>Flow_ProductionToAnalyse</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_AnalyseRetours" name="Analyse des retours">
+      <bpmn:incoming>Flow_ProductionToAnalyse</bpmn:incoming>
+      <bpmn:outgoing>Flow_AnalyseToLancement</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_LancementProduit" name="Lancement du produit sur le marché">
+      <bpmn:incoming>Flow_AnalyseToLancement</bpmn:incoming>
+      <bpmn:outgoing>Flow_LancementToSuivi</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_SuiviPostLancement" name="Suivi post-lancement">
+      <bpmn:incoming>Flow_LancementToSuivi</bpmn:incoming>
+      <bpmn:outgoing>Flow_SuiviToEnd</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="EndEvent_FinDeveloppement">
+      <bpmn:incoming>Flow_SuiviToEnd</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_IdentificationToEquipe" sourceRef="StartEvent_IdentificationBesoin" targetRef="Task_FormationEquipe" />
+    <bpmn:sequenceFlow id="Flow_EquipeToConception" sourceRef="Task_FormationEquipe" targetRef="Task_ConceptionProduit" />
+    <bpmn:sequenceFlow id="Flow_ConceptionToPrototype" sourceRef="Task_ConceptionProduit" targetRef="Task_RealisationPrototype" />
+    <bpmn:sequenceFlow id="Flow_PrototypeToValidation" sourceRef="Task_RealisationPrototype" targetRef="Task_ValidationPrototype" />
+    <bpmn:sequenceFlow id="Flow_ValidationToProductionPilote" sourceRef="Task_ValidationPrototype" targetRef="Task_ProductionPilote" />
+    <bpmn:sequenceFlow id="Flow_ProductionToAnalyse" sourceRef="Task_ProductionPilote" targetRef="Task_AnalyseRetours" />
+    <bpmn:sequenceFlow id="Flow_AnalyseToLancement" sourceRef="Task_AnalyseRetours" targetRef="Task_LancementProduit" />
+    <bpmn:sequenceFlow id="Flow_LancementToSuivi" sourceRef="Task_LancementProduit" targetRef="Task_SuiviPostLancement" />
+    <bpmn:sequenceFlow id="Flow_SuiviToEnd" sourceRef="Task_SuiviPostLancement" targetRef="EndEvent_FinDeveloppement" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_DeveloppementProduit">
+    <bpmndi:BPMNPlane id="BPMNPlane_DeveloppementProduit" bpmnelement="Process_DeveloppementProduit">
+      <!-- Shapes -->
+      <bpmndi:BPMNShape id="Shape_StartEvent_IdentificationBesoin" bpmnElement="StartEvent_IdentificationBesoin">
+        <dc:Bounds x="100" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_FormationEquipe" bpmnElement="Task_FormationEquipe">
+        <dc:Bounds x="200" y="90" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ConceptionProduit" bpmnElement="Task_ConceptionProduit">
+        <dc:Bounds x="400" y="90" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_RealisationPrototype" bpmnElement="Task_RealisationPrototype">
+        <dc:Bounds x="600" y="90" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ValidationPrototype" bpmnElement="Task_ValidationPrototype">
+        <dc:Bounds x="800" y="90" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ProductionPilote" bpmnElement="Task_ProductionPilote">
+        <dc:Bounds x="1000" y="90" width="200" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_AnalyseRetours" bpmnElement="Task_AnalyseRetours">
+        <dc:Bounds x="1250" y="90" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_LancementProduit" bpmnElement="Task_LancementProduit">
+        <dc:Bounds x="1450" y="90" width="200" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_SuiviPostLancement" bpmnElement="Task_SuiviPostLancement">
+        <dc:Bounds x="1700" y="90" width="200" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_FinDeveloppement" bpmnElement="EndEvent_FinDeveloppement">
+        <dc:Bounds x="1950" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <!-- Edges -->
+      <bpmndi:BPMNEdge id="Edge_Flow_IdentificationToEquipe" bpmnElement="Flow_IdentificationToEquipe">
+        <di:waypoint x="136" y="118" />
+        <di:waypoint x="200" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EquipeToConception" bpmnElement="Flow_EquipeToConception">
+        <di:waypoint x="350" y="115" />
+        <di:waypoint x="400" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ConceptionToPrototype" bpmnElement="Flow_ConceptionToPrototype">
+        <di:waypoint x="550" y="115" />
+        <di:waypoint x="600" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PrototypeToValidation" bpmnElement="Flow_PrototypeToValidation">
+        <di:waypoint x="750" y="115" />
+        <di:waypoint x="800" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ValidationToProductionPilote" bpmnElement="Flow_ValidationToProductionPilote">
+        <di:waypoint x="950" y="115" />
+        <di:waypoint x="1000" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ProductionToAnalyse" bpmnElement="Flow_ProductionToAnalyse">
+        <di:waypoint x="1200" y="115" />
+        <di:waypoint x="1250" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_AnalyseToLancement" bpmnElement="Flow_AnalyseToLancement">
+        <di:waypoint x="1400" y="115" />
+        <di:waypoint x="1450" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_LancementToSuivi" bpmnElement="Flow_LancementToSuivi">
+        <di:waypoint x="1650" y="115" />
+        <di:waypoint x="1700" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SuiviToEnd" bpmnElement="Flow_SuiviToEnd">
+        <di:waypoint x="1900" y="115" />
+        <di:waypoint x="1950" y="118" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

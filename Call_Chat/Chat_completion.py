@@ -227,7 +227,6 @@ def push_request_dynamodb(json_generated):
         print("Error pushing to DynamoDB:", e)
         raise
 
-
 def get_item_dynanodb(table_name, key):
     """
     Get an item from a DynamoDB table based on the key.
@@ -235,6 +234,11 @@ def get_item_dynanodb(table_name, key):
     table = dynamodb.Table(table_name)
     response = table.get_item(Key=key)
     return response['Item'] if 'Item' in response else None 
+
+
+
+
+
 
 @app.route('/health', methods=['GET']) 
 def health():   

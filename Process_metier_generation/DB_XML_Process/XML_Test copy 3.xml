@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_GestionCommandesEcommerce" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_CommandePasse" name="Commande Passée">
+      <bpmn:outgoing>Flow_CommandeToVerificationStock</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:parallelGateway id="Gateway_VerificationInputs" name="Réunion des entrées pour la vérification des stocks">
+      <bpmn:incoming>Flow_CommandeToVerificationStock</bpmn:incoming>
+      <bpmn:outgoing>Flow_Input1ToStock</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Input2ToStock</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:task id="Task_InputVerification1" name="Vérification des stocks (Base de données principale)">
+      <bpmn:incoming>Flow_Input1ToStock</bpmn:incoming>
+      <bpmn:outgoing>Flow_StockInput1ToValidation</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_InputVerification2" name="Vérification des stocks (Fournisseurs tiers)">
+      <bpmn:incoming>Flow_Input2ToStock</bpmn:incoming>
+      <bpmn:outgoing>Flow_StockInput2ToValidation</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:parallelGateway id="Gateway_StockValidation" name="Validation des stocks">
+      <bpmn:incoming>Flow_StockInput1ToValidation</bpmn:incoming>
+      <bpmn:incoming>Flow_StockInput2ToValidation</bpmn:incoming>
+      <bpmn:outgoing>Flow_StockToConfirmation</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:task id="Task_ConfirmationCommande" name="Confirmation de la commande">
+      <bpmn:incoming>Flow_StockToConfirmation</bpmn:incoming>
+      <bpmn:outgoing>Flow_ConfirmationToPaiement</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_ValidationPaiement" name="Validation du paiement">
+      <bpmn:incoming>Flow_ConfirmationToPaiement</bpmn:incoming>
+      <bpmn:outgoing>Flow_PaiementToPreparation</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:parallelGateway id="Gateway_StockAndPaiement" name="Validation stocks et paiement">
+      <bpmn:incoming>Flow_PaiementToPreparation</bpmn:incoming>
+      <bpmn:outgoing>Flow_PreparationToExpedition</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:task id="Task_PreparationCommande" name="Préparation de la commande">
+      <bpmn:incoming>Flow_PreparationToExpedition</bpmn:incoming>
+      <bpmn:outgoing>Flow_PreparationToExpedition</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_ExpeditionCommande" name="Expédition de la commande">
+      <bpmn:incoming>Flow_PreparationToExpedition</bpmn:incoming>
+      <bpmn:outgoing>Flow_ExpeditionToSuivi</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_EnvoiSuivi" name="Envoi de l'email de suivi">
+      <bpmn:incoming>Flow_ExpeditionToSuivi</bpmn:incoming>
+      <bpmn:outgoing>Flow_SuiviToRetour</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="Gateway_Retour" name="Produit retourné ?">
+      <bpmn:incoming>Flow_SuiviToRetour</bpmn:incoming>
+      <bpmn:outgoing>Flow_RetourYes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_RetourNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="Task_VerificationRetour" name="Vérification du produit">
+      <bpmn:incoming>Flow_RetourYes</bpmn:incoming>
+      <bpmn:outgoing>Flow_VerificationToResolution</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_ResolutionRetour" name="Proposition de remboursement ou d'échange">
+      <bpmn:incoming>Flow_VerificationToResolution</bpmn:incoming>
+      <bpmn:outgoing>Flow_ResolutionToEnd</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_FollowUp" name="Suivi de satisfaction">
+      <bpmn:incoming>Flow_RetourNo</bpmn:incoming>
+      <bpmn:outgoing>Flow_FollowToEnd</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="EndEvent_FinProcessus" name="Fin du processus">
+      <bpmn:incoming>Flow_FollowToEnd</bpmn:incoming>
+      <bpmn:incoming>Flow_ResolutionToEnd</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_CommandeToVerificationStock" sourceRef="StartEvent_CommandePasse" targetRef="Gateway_VerificationInputs" />
+    <bpmn:sequenceFlow id="Flow_Input1ToStock" sourceRef="Gateway_VerificationInputs" targetRef="Task_InputVerification1" />
+    <bpmn:sequenceFlow id="Flow_Input2ToStock" sourceRef="Gateway_VerificationInputs" targetRef="Task_InputVerification2" />
+    <bpmn:sequenceFlow id="Flow_StockInput1ToValidation" sourceRef="Task_InputVerification1" targetRef="Gateway_StockValidation" />
+    <bpmn:sequenceFlow id="Flow_StockInput2ToValidation" sourceRef="Task_InputVerification2" targetRef="Gateway_StockValidation" />
+    <bpmn:sequenceFlow id="Flow_StockToConfirmation" sourceRef="Gateway_StockValidation" targetRef="Task_ConfirmationCommande" />
+    <bpmn:sequenceFlow id="Flow_ConfirmationToPaiement" sourceRef="Task_ConfirmationCommande" targetRef="Task_ValidationPaiement" />
+    <bpmn:sequenceFlow id="Flow_PaiementToPreparation" sourceRef="Task_ValidationPaiement" targetRef="Gateway_StockAndPaiement" />
+    <bpmn:sequenceFlow id="Flow_PreparationToExpedition" sourceRef="Gateway_StockAndPaiement" targetRef="Task_PreparationCommande" />
+    <bpmn:sequenceFlow id="Flow_ExpeditionToSuivi" sourceRef="Task_PreparationCommande" targetRef="Task_ExpeditionCommande" />
+    <bpmn:sequenceFlow id="Flow_SuiviToRetour" sourceRef="Task_ExpeditionCommande" targetRef="Task_EnvoiSuivi" />
+    <bpmn:sequenceFlow id="Flow_RetourYes" sourceRef="Gateway_Retour" targetRef="Task_VerificationRetour" />
+    <bpmn:sequenceFlow id="Flow_RetourNo" sourceRef="Gateway_Retour" targetRef="Task_FollowUp" />
+    <bpmn:sequenceFlow id="Flow_VerificationToResolution" sourceRef="Task_VerificationRetour" targetRef="Task_ResolutionRetour" />
+    <bpmn:sequenceFlow id="Flow_ResolutionToEnd" sourceRef="Task_ResolutionRetour" targetRef="EndEvent_FinProcessus" />
+    <bpmn:sequenceFlow id="Flow_FollowToEnd" sourceRef="Task_FollowUp" targetRef="EndEvent_FinProcessus" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_GestionCommandesEcommerce">
+    <bpmndi:BPMNPlane id="BPMNPlane_GestionCommandesEcommerce" bpmnElement="Process_GestionCommandesEcommerce">
+      <bpmndi:BPMNShape id="Shape_StartEvent_CommandePasse" bpmnElement="StartEvent_CommandePasse">
+        <dc:Bounds x="100" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_VerificationInputs" bpmnElement="Gateway_VerificationInputs">
+        <dc:Bounds x="200" y="100" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_InputVerification1" bpmnElement="Task_InputVerification1">
+        <dc:Bounds x="300" y="50" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_InputVerification2" bpmnElement="Task_InputVerification2">
+        <dc:Bounds x="300" y="150" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_StockValidation" bpmnElement="Gateway_StockValidation">
+        <dc:Bounds x="500" y="100" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ConfirmationCommande" bpmnElement="Task_ConfirmationCommande">
+        <dc:Bounds x="600" y="100" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ValidationPaiement" bpmnElement="Task_ValidationPaiement">
+        <dc:Bounds x="800" y="100" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_StockAndPaiement" bpmnElement="Gateway_StockAndPaiement">
+        <dc:Bounds x="1000" y="100" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PreparationCommande" bpmnElement="Task_PreparationCommande">
+        <dc:Bounds x="1100" y="100" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ExpeditionCommande" bpmnElement="Task_ExpeditionCommande">
+        <dc:Bounds x="1300" y="100" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_EnvoiSuivi" bpmnElement="Task_EnvoiSuivi">
+        <dc:Bounds x="1500" y="100" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_Retour" bpmnElement="Gateway_Retour">
+        <dc:Bounds x="1700" y="100" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_VerificationRetour" bpmnElement="Task_VerificationRetour">
+        <dc:Bounds x="1800" y="50" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ResolutionRetour" bpmnElement="Task_ResolutionRetour">
+        <dc:Bounds x="2000" y="50" width="200" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_FollowUp" bpmnElement="Task_FollowUp">
+        <dc:Bounds x="1800" y="150" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_FinProcessus" bpmnElement="EndEvent_FinProcessus">
+        <dc:Bounds x="2200" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- Edges -->
+      <bpmndi:BPMNEdge id="Edge_Flow_CommandeToVerificationStock" bpmnElement="Flow_CommandeToVerificationStock">
+        <di:waypoint x="136" y="118" />
+        <di:waypoint x="200" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Input1ToStock" bpmnElement="Flow_Input1ToStock">
+        <di:waypoint x="250" y="125" />
+        <di:waypoint x="300" y="75" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Input2ToStock" bpmnElement="Flow_Input2ToStock">
+        <di:waypoint x="250" y="125" />
+        <di:waypoint x="300" y="175" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_StockInput1ToValidation" bpmnElement="Flow_StockInput1ToValidation">
+        <di:waypoint x="450" y="75" />
+        <di:waypoint x="500" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_StockInput2ToValidation" bpmnElement="Flow_StockInput2ToValidation">
+        <di:waypoint x="450" y="175" />
+        <di:waypoint x="500" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_StockToConfirmation" bpmnElement="Flow_StockToConfirmation">
+        <di:waypoint x="550" y="125" />
+        <di:waypoint x="600" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ConfirmationToPaiement" bpmnElement="Flow_ConfirmationToPaiement">
+        <di:waypoint x="750" y="125" />
+        <di:waypoint x="800" y="125" />
+      </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="Shape_Task_ResolutionRetour" bpmnElement="Task_ResolutionRetour">
+        <dc:Bounds x="2000" y="50" width="200" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_FollowUp" bpmnElement="Task_FollowUp">
+        <dc:Bounds x="1800" y="150" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_FinProcessus" bpmnElement="EndEvent_FinProcessus">
+        <dc:Bounds x="2200" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Edge_Flow_CommandeToVerificationStock" bpmnElement="Flow_CommandeToVerificationStock">
+        <di:waypoint x="136" y="118" />
+        <di:waypoint x="200" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Input1ToStock" bpmnElement="Flow_Input1ToStock">
+        <di:waypoint x="250" y="125" />
+        <di:waypoint x="300" y="75" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Input2ToStock" bpmnElement="Flow_Input2ToStock">
+        <di:waypoint x="250" y="125" />
+        <di:waypoint x="300" y="175" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_StockInput1ToValidation" bpmnElement="Flow_StockInput1ToValidation">
+        <di:waypoint x="450" y="75" />
+        <di:waypoint x="500" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_StockInput2ToValidation" bpmnElement="Flow_StockInput2ToValidation">
+        <di:waypoint x="450" y="175" />
+        <di:waypoint x="500" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_StockToConfirmation" bpmnElement="Flow_StockToConfirmation">
+        <di:waypoint x="550" y="125" />
+        <di:waypoint x="600" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ConfirmationToPaiement" bpmnElement="Flow_ConfirmationToPaiement">
+        <di:waypoint x="750" y="125" />
+        <di:waypoint x="800" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PaiementToPreparation" bpmnElement="Flow_PaiementToPreparation">
+        <di:waypoint x="950" y="125" />
+        <di:waypoint x="1000" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PreparationToExpedition" bpmnElement="Flow_PreparationToExpedition">
+        <di:waypoint x="1150" y="125" />
+        <di:waypoint x="1300" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ExpeditionToSuivi" bpmnElement="Flow_ExpeditionToSuivi">
+        <di:waypoint x="1450" y="125" />
+        <di:waypoint x="1500" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_SuiviToRetour" bpmnElement="Flow_SuiviToRetour">
+        <di:waypoint x="1700" y="125" />
+        <di:waypoint x="1800" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_RetourYes" bpmnElement="Flow_RetourYes">
+        <di:waypoint x="1900" y="75" />
+        <di:waypoint x="2000" y="75" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_RetourNo" bpmnElement="Flow_RetourNo">
+        <di:waypoint x="1900" y="125" />
+        <di:waypoint x="2000" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_VerificationToResolution" bpmnElement="Flow_VerificationToResolution">
+        <di:waypoint x="2150" y="75" />
+        <di:waypoint x="2200" y="100" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
+

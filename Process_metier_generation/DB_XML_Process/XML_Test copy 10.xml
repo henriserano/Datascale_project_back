@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
+                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
+                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI" 
+                   id="Definitions_ProcessusMarketing" 
+                   targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <bpmn:process id="Process_GestionRisquesProjet" isExecutable="false">
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_IdentificationRisques" name="Identification des risques">
+      <bpmn:outgoing>Flow_ClassificationCriticite</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Task: Classification par criticité -->
+    <bpmn:task id="Task_ClassificationCriticite" name="Classification par criticité">
+      <bpmn:incoming>Flow_ClassificationCriticite</bpmn:incoming>
+      <bpmn:outgoing>Flow_DefinitionStrategieMitigation</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Définition des stratégies de mitigation -->
+    <bpmn:task id="Task_DefinitionStrategieMitigation" name="Définition des stratégies de mitigation">
+      <bpmn:incoming>Flow_DefinitionStrategieMitigation</bpmn:incoming>
+      <bpmn:outgoing>Flow_PointsControle</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Points de contrôle réguliers -->
+    <bpmn:task id="Task_PointsControle" name="Points de contrôle réguliers">
+      <bpmn:incoming>Flow_PointsControle</bpmn:incoming>
+      <bpmn:outgoing>Flow_IncidentSurvenu</bpmn:outgoing>
+      <bpmn:outgoing>Flow_RisquesMaitrises</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Gateway: Incident survenu ? -->
+    <bpmn:exclusiveGateway id="Gateway_IncidentSurvenu" name="Incident survenu ?">
+      <bpmn:incoming>Flow_IncidentSurvenu</bpmn:incoming>
+      <bpmn:outgoing>Flow_ActivationPlanReponse</bpmn:outgoing>
+      <bpmn:outgoing>Flow_FinPointsControle</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Task: Activation du plan de réponse -->
+    <bpmn:task id="Task_ActivationPlanReponse" name="Activation du plan de réponse">
+      <bpmn:incoming>Flow_ActivationPlanReponse</bpmn:incoming>
+      <bpmn:outgoing>Flow_AjustementPlannings</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Ajustement des plannings -->
+    <bpmn:task id="Task_AjustementPlannings" name="Ajustement des plannings">
+      <bpmn:incoming>Flow_AjustementPlannings</bpmn:incoming>
+      <bpmn:outgoing>Flow_RetourPointsControle</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Retour aux points de contrôle -->
+    <bpmn:task id="Task_RetourPointsControle" name="Retour aux points de contrôle">
+      <bpmn:incoming>Flow_RetourPointsControle</bpmn:incoming>
+      <bpmn:outgoing>Flow_PointsControle</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- End Event -->
+    <bpmn:endEvent id="EndEvent_RisquesMaitrises" name="Risques maîtrisés">
+      <bpmn:incoming>Flow_RisquesMaitrises</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_ClassificationCriticite" sourceRef="StartEvent_IdentificationRisques" targetRef="Task_ClassificationCriticite" />
+    <bpmn:sequenceFlow id="Flow_DefinitionStrategieMitigation" sourceRef="Task_ClassificationCriticite" targetRef="Task_DefinitionStrategieMitigation" />
+    <bpmn:sequenceFlow id="Flow_PointsControle" sourceRef="Task_DefinitionStrategieMitigation" targetRef="Task_PointsControle" />
+    <bpmn:sequenceFlow id="Flow_IncidentSurvenu" sourceRef="Task_PointsControle" targetRef="Gateway_IncidentSurvenu" />
+    <bpmn:sequenceFlow id="Flow_RisquesMaitrises" sourceRef="Task_PointsControle" targetRef="EndEvent_RisquesMaitrises" />
+    <bpmn:sequenceFlow id="Flow_ActivationPlanReponse" sourceRef="Gateway_IncidentSurvenu" targetRef="Task_ActivationPlanReponse" />
+    <bpmn:sequenceFlow id="Flow_AjustementPlannings" sourceRef="Task_ActivationPlanReponse" targetRef="Task_AjustementPlannings" />
+    <bpmn:sequenceFlow id="Flow_RetourPointsControle" sourceRef="Task_AjustementPlannings" targetRef="Task_RetourPointsControle" />
+    <bpmn:sequenceFlow id="Flow_FinPointsControle" sourceRef="Gateway_IncidentSurvenu" targetRef="Task_PointsControle" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_GestionRisquesProjet">
+    <bpmndi:BPMNPlane id="BPMNPlane_GestionRisquesProjet" bpmnElement="Process_GestionRisquesProjet">
+      <!-- BPMN Shapes -->
+      <bpmndi:BPMNShape id="Shape_StartEvent_IdentificationRisques" bpmnElement="StartEvent_IdentificationRisques">
+        <dc:Bounds x="100" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ClassificationCriticite" bpmnElement="Task_ClassificationCriticite">
+        <dc:Bounds x="200" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_DefinitionStrategieMitigation" bpmnElement="Task_DefinitionStrategieMitigation">
+        <dc:Bounds x="350" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PointsControle" bpmnElement="Task_PointsControle">
+        <dc:Bounds x="500" y="90" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_IncidentSurvenu" bpmnElement="Gateway_IncidentSurvenu">
+        <dc:Bounds x="650" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ActivationPlanReponse" bpmnElement="Task_ActivationPlanReponse">
+        <dc:Bounds x="750" y="50" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_AjustementPlannings" bpmnElement="Task_AjustementPlannings">
+        <dc:Bounds x="900" y="50" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_RetourPointsControle" bpmnElement="Task_RetourPointsControle">
+        <dc:Bounds x="1050" y="50" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_RisquesMaitrises" bpmnElement="EndEvent_RisquesMaitrises">
+        <dc:Bounds x="800" y="165" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <!-- BPMN Edges -->
+      <bpmndi:BPMNEdge id="Edge_Flow_ClassificationCriticite" bpmnElement="Flow_ClassificationCriticite">
+        <di:waypoint x="136" y="118" />
+        <di:waypoint x="200" y="118" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DefinitionStrategieMitigation" bpmnElement="Flow_DefinitionStrategieMitigation">
+        <di:waypoint x="300" y="120" />
+        <di:waypoint x="350" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PointsControle" bpmnElement="Flow_PointsControle">
+        <di:waypoint x="450" y="120" />
+        <di:waypoint x="500" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_IncidentSurvenu" bpmnElement="Flow_IncidentSurvenu">
+        <di:waypoint x="600" y="120" />
+        <di:waypoint x="650" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_RisquesMaitrises" bpmnElement="Flow_RisquesMaitrises">
+        <di:waypoint x="600" y="120" />
+        <di:waypoint x="800" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ActivationPlanReponse" bpmnElement="Flow_ActivationPlanReponse">
+        <di:waypoint x="700" y="70" />
+        <di:waypoint x="750" y="70" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_AjustementPlannings" bpmnElement="Flow_AjustementPlannings">
+        <di:waypoint x="850" y="70" />
+        <di:waypoint x="900" y="70" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_RetourPointsControle" bpmnElement="Flow_RetourPointsControle">
+        <di:waypoint x="1000" y="70" />
+        <di:waypoint x="1050" y="70" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_Recrutement" isExecutable="false">
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_PublicationOffre" name="Publication de l'offre">
+      <bpmn:outgoing>Flow_PublicationToReception</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Task: Réception des candidatures -->
+    <bpmn:task id="Task_ReceptionCandidatures" name="Réception des candidatures">
+      <bpmn:incoming>Flow_PublicationToReception</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReceptionToPreselection</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Présélection des candidats -->
+    <bpmn:task id="Task_Preselection" name="Présélection des candidats">
+      <bpmn:incoming>Flow_ReceptionToPreselection</bpmn:incoming>
+      <bpmn:outgoing>Flow_PreselectionToEntretienTel</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Entretien téléphonique -->
+    <bpmn:task id="Task_EntretienTel" name="Entretien téléphonique">
+      <bpmn:incoming>Flow_PreselectionToEntretienTel</bpmn:incoming>
+      <bpmn:outgoing>Flow_EntretienTelToEntretienManager</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Entretien avec les managers -->
+    <bpmn:task id="Task_EntretienManager" name="Entretien avec les managers">
+      <bpmn:incoming>Flow_EntretienTelToEntretienManager</bpmn:incoming>
+      <bpmn:outgoing>Flow_EntretienManagerToDecision</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Gateway: Décision -->
+    <bpmn:exclusiveGateway id="Gateway_Decision" name="Décision">
+      <bpmn:incoming>Flow_EntretienManagerToDecision</bpmn:incoming>
+      <bpmn:outgoing>Flow_DecisionToProposition</bpmn:outgoing>
+      <bpmn:outgoing>Flow_DecisionToRejection</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Task: Proposition d'embauche -->
+    <bpmn:task id="Task_PropositionEmbauche" name="Proposition d'embauche">
+      <bpmn:incoming>Flow_DecisionToProposition</bpmn:incoming>
+      <bpmn:outgoing>Flow_PropositionToOnboarding</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Rejet de la candidature -->
+    <bpmn:task id="Task_Rejection" name="Rejet de la candidature">
+      <bpmn:incoming>Flow_DecisionToRejection</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndRejection</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Intégration -->
+    <bpmn:task id="Task_Onboarding" name="Intégration">
+      <bpmn:incoming>Flow_PropositionToOnboarding</bpmn:incoming>
+    </bpmn:task>
+
+    <!-- End Event: Rejet -->
+    <bpmn:endEvent id="EndEvent_Rejection" name="Fin du processus (Rejet)">
+      <bpmn:incoming>Flow_EndRejection</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_PublicationToReception" sourceRef="StartEvent_PublicationOffre" targetRef="Task_ReceptionCandidatures" />
+    <bpmn:sequenceFlow id="Flow_ReceptionToPreselection" sourceRef="Task_ReceptionCandidatures" targetRef="Task_Preselection" />
+    <bpmn:sequenceFlow id="Flow_PreselectionToEntretienTel" sourceRef="Task_Preselection" targetRef="Task_EntretienTel" />
+    <bpmn:sequenceFlow id="Flow_EntretienTelToEntretienManager" sourceRef="Task_EntretienTel" targetRef="Task_EntretienManager" />
+    <bpmn:sequenceFlow id="Flow_EntretienManagerToDecision" sourceRef="Task_EntretienManager" targetRef="Gateway_Decision" />
+    <bpmn:sequenceFlow id="Flow_DecisionToProposition" sourceRef="Gateway_Decision" targetRef="Task_PropositionEmbauche" />
+    <bpmn:sequenceFlow id="Flow_DecisionToRejection" sourceRef="Gateway_Decision" targetRef="Task_Rejection" />
+    <bpmn:sequenceFlow id="Flow_PropositionToOnboarding" sourceRef="Task_PropositionEmbauche" targetRef="Task_Onboarding" />
+    <bpmn:sequenceFlow id="Flow_EndRejection" sourceRef="Task_Rejection" targetRef="EndEvent_Rejection" />
+  </bpmn:process>
+
+  <!-- Diagram Section -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Recrutement">
+    <bpmndi:BPMNPlane id="BPMNPlane_Recrutement" bpmnElement="Process_Recrutement">
+      <bpmndi:BPMNShape id="Shape_StartEvent_PublicationOffre" bpmnElement="StartEvent_PublicationOffre">
+        <dc:Bounds x="100" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ReceptionCandidatures" bpmnElement="Task_ReceptionCandidatures">
+        <dc:Bounds x="200" y="90" width="100" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Preselection" bpmnElement="Task_Preselection">
+        <dc:Bounds x="350" y="90" width="100" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_EntretienTel" bpmnElement="Task_EntretienTel">
+        <dc:Bounds x="500" y="90" width="100" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_EntretienManager" bpmnElement="Task_EntretienManager">
+        <dc:Bounds x="650" y="90" width="100" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_Decision" bpmnElement="Gateway_Decision">
+        <dc:Bounds x="800" y="100" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_PropositionEmbauche" bpmnElement="Task_PropositionEmbauche">
+        <dc:Bounds x="900" y="90" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Rejection" bpmnElement="Task_Rejection">
+        <dc:Bounds x="900" y="180" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Onboarding" bpmnElement="Task_Onboarding">
+        <dc:Bounds x="1100" y="90" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_Rejection" bpmnElement="EndEvent_Rejection">
+        <dc:Bounds x="1100" y="200" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <!-- Edges -->
+      <bpmndi:BPMNEdge id="Edge_Flow_PublicationToReception" bpmnElement="Flow_PublicationToReception">
+        <di:waypoint x="136" y="118" />
+        <di:waypoint x="200" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_ReceptionToPreselection" bpmnElement="Flow_ReceptionToPreselection">
+        <di:waypoint x="300" y="115" />
+        <di:waypoint x="350" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PreselectionToEntretienTel" bpmnElement="Flow_PreselectionToEntretienTel">
+        <di:waypoint x="450" y="115" />
+        <di:waypoint x="500" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EntretienTelToEntretienManager" bpmnElement="Flow_EntretienTelToEntretienManager">
+        <di:waypoint x="600" y="115" />
+        <di:waypoint x="650" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EntretienManagerToDecision" bpmnElement="Flow_EntretienManagerToDecision">
+        <di:waypoint x="750" y="115" />
+        <di:waypoint x="800" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DecisionToProposition" bpmnElement="Flow_DecisionToProposition">
+        <di:waypoint x="850" y="125" />
+        <di:waypoint x="900" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_DecisionToRejection" bpmnElement="Flow_DecisionToRejection">
+        <di:waypoint x="850" y="125" />
+        <di:waypoint x="900" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_PropositionToOnboarding" bpmnElement="Flow_PropositionToOnboarding">
+        <di:waypoint x="1050" y="115" />
+        <di:waypoint x="1100" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_EndRejection" bpmnElement="Flow_EndRejection">
+        <di:waypoint x="1050" y="205" />
+        <di:waypoint x="1100" y="218" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

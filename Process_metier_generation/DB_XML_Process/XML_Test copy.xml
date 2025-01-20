@@ -1,10 +1,10 @@
-<!--?xml version="1.0" encoding="UTF-8"?-->
-<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_ClaimManagement" targetnamespace="http://bpmn.io/schema/bpmn">
-  <bpmn:process id="Process_ClaimManagement" isexecutable="true">
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_ClaimManagement_Extended" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_ClaimManagement_Extended" isExecutable="true">
     <!-- Start Event -->
-    <bpmn:startevent id="StartEvent_SubmitClaim">
+    <bpmn:startEvent id="StartEvent_SubmitClaim" name="Submit Claim">
       <bpmn:outgoing>Flow_TicketCreation</bpmn:outgoing>
-    </bpmn:startevent>
+    </bpmn:startEvent>
 
     <!-- Task: Create Ticket -->
     <bpmn:task id="Task_CreateTicket" name="Create Ticket">
@@ -13,20 +13,51 @@
     </bpmn:task>
 
     <!-- Task: Assign Ticket -->
-    <bpmn:task id="Task_AssignTicket" name="Assign Ticket to Service Representative">
+    <bpmn:task id="Task_AssignTicket" name="Assign Ticket to Representative">
       <bpmn:incoming>Flow_AssignTicket</bpmn:incoming>
+      <bpmn:outgoing>Flow_VerifyDocuments</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Verify Documents -->
+    <bpmn:task id="Task_VerifyDocuments" name="Verify Attached Documents">
+      <bpmn:incoming>Flow_VerifyDocuments</bpmn:incoming>
       <bpmn:outgoing>Flow_AnalyzeClaim</bpmn:outgoing>
     </bpmn:task>
 
     <!-- Task: Analyze Claim -->
-    <bpmn:task id="Task_AnalyzeClaim" name="Analyze Claim">
+    <bpmn:task id="Task_AnalyzeClaim" name="Analyze Claim Details">
       <bpmn:incoming>Flow_AnalyzeClaim</bpmn:incoming>
+      <bpmn:outgoing>Flow_CheckFraud</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Check for Fraud -->
+    <bpmn:task id="Task_CheckFraud" name="Perform Fraud Check">
+      <bpmn:incoming>Flow_CheckFraud</bpmn:incoming>
+      <bpmn:outgoing>Flow_FraudDecision</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Gateway: Fraud Detected? -->
+    <bpmn:exclusiveGateway id="Gateway_FraudDetected" name="Fraud Detected?">
+      <bpmn:incoming>Flow_FraudDecision</bpmn:incoming>
+      <bpmn:outgoing>Flow_RejectClaim</bpmn:outgoing>
       <bpmn:outgoing>Flow_ContactClient</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Task: Reject Claim -->
+    <bpmn:task id="Task_RejectClaim" name="Reject Claim">
+      <bpmn:incoming>Flow_RejectClaim</bpmn:incoming>
+      <bpmn:outgoing>Flow_EndProcess</bpmn:outgoing>
     </bpmn:task>
 
     <!-- Task: Contact Client -->
-    <bpmn:task id="Task_ContactClient" name="Contact Client">
+    <bpmn:task id="Task_ContactClient" name="Contact Client for Clarifications">
       <bpmn:incoming>Flow_ContactClient</bpmn:incoming>
+      <bpmn:outgoing>Flow_RequestAdditionalInfo</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Request Additional Information -->
+    <bpmn:task id="Task_RequestAdditionalInfo" name="Request Additional Information">
+      <bpmn:incoming>Flow_RequestAdditionalInfo</bpmn:incoming>
       <bpmn:outgoing>Flow_ProposeSolution</bpmn:outgoing>
     </bpmn:task>
 
@@ -37,11 +68,11 @@
     </bpmn:task>
 
     <!-- Gateway: Solution Accepted? -->
-    <bpmn:exclusivegateway id="Gateway_SolutionAccepted" name="Solution Accepted?">
+    <bpmn:exclusiveGateway id="Gateway_SolutionAccepted" name="Solution Accepted?">
       <bpmn:incoming>Flow_CheckSolutionAcceptance</bpmn:incoming>
       <bpmn:outgoing>Flow_CloseTicket</bpmn:outgoing>
       <bpmn:outgoing>Flow_EscalateClaim</bpmn:outgoing>
-    </bpmn:exclusivegateway>
+    </bpmn:exclusiveGateway>
 
     <!-- Task: Close Ticket -->
     <bpmn:task id="Task_CloseTicket" name="Close Ticket">
@@ -50,62 +81,165 @@
     </bpmn:task>
 
     <!-- Task: Escalate Claim -->
-    <bpmn:task id="Task_EscalateClaim" name="Escalate Claim">
+    <bpmn:task id="Task_EscalateClaim" name="Escalate Claim to Manager">
       <bpmn:incoming>Flow_EscalateClaim</bpmn:incoming>
+      <bpmn:outgoing>Flow_ManagerReview</bpmn:outgoing>
+    </bpmn:task>
+
+    <!-- Task: Manager Review -->
+    <bpmn:task id="Task_ManagerReview" name="Manager Review">
+      <bpmn:incoming>Flow_ManagerReview</bpmn:incoming>
       <bpmn:outgoing>Flow_EndProcess</bpmn:outgoing>
     </bpmn:task>
 
     <!-- End Event -->
-    <bpmn:endevent id="EndEvent_ProcessComplete">
+    <bpmn:endEvent id="EndEvent_ProcessComplete" name="Process Complete">
       <bpmn:incoming>Flow_EndProcess</bpmn:incoming>
-    </bpmn:endevent>
+    </bpmn:endEvent>
 
     <!-- Sequence Flows -->
-    <bpmn:sequenceflow id="Flow_TicketCreation" sourceRef="StartEvent_SubmitClaim" targetRef="Task_CreateTicket"/>
-    <bpmn:sequenceflow id="Flow_AssignTicket" sourceRef="Task_CreateTicket" targetRef="Task_AssignTicket"/>
-    <bpmn:sequenceflow id="Flow_AnalyzeClaim" sourceRef="Task_AssignTicket" targetRef="Task_AnalyzeClaim"/>
-    <bpmn:sequenceflow id="Flow_ContactClient" sourceRef="Task_AnalyzeClaim" targetRef="Task_ContactClient"/>
-    <bpmn:sequenceflow id="Flow_ProposeSolution" sourceRef="Task_ContactClient" targetRef="Task_ProposeSolution"/>
-    <bpmn:sequenceflow id="Flow_CheckSolutionAcceptance" sourceRef="Task_ProposeSolution" targetRef="Gateway_SolutionAccepted"/>
-    <bpmn:sequenceflow id="Flow_CloseTicket" sourceRef="Gateway_SolutionAccepted" targetRef="Task_CloseTicket"/>
-    <bpmn:sequenceflow id="Flow_EscalateClaim" sourceRef="Gateway_SolutionAccepted" targetRef="Task_EscalateClaim"/>
-    <bpmn:sequenceflow id="Flow_EndProcess" sourceRef="Task_CloseTicket" targetRef="EndEvent_ProcessComplete"/>
-    <bpmn:sequenceflow id="Flow_EndProcessEscalation" sourceRef="Task_EscalateClaim" targetRef="EndEvent_ProcessComplete"/>
+    <bpmn:sequenceFlow id="Flow_TicketCreation" sourceRef="StartEvent_SubmitClaim" targetRef="Task_CreateTicket"/>
+    <bpmn:sequenceFlow id="Flow_AssignTicket" sourceRef="Task_CreateTicket" targetRef="Task_AssignTicket"/>
+    <bpmn:sequenceFlow id="Flow_VerifyDocuments" sourceRef="Task_AssignTicket" targetRef="Task_VerifyDocuments"/>
+    <bpmn:sequenceFlow id="Flow_AnalyzeClaim" sourceRef="Task_VerifyDocuments" targetRef="Task_AnalyzeClaim"/>
+    <bpmn:sequenceFlow id="Flow_CheckFraud" sourceRef="Task_AnalyzeClaim" targetRef="Task_CheckFraud"/>
+    <bpmn:sequenceFlow id="Flow_FraudDecision" sourceRef="Task_CheckFraud" targetRef="Gateway_FraudDetected"/>
+    <bpmn:sequenceFlow id="Flow_RejectClaim" sourceRef="Gateway_FraudDetected" targetRef="Task_RejectClaim"/>
+    <bpmn:sequenceFlow id="Flow_ContactClient" sourceRef="Gateway_FraudDetected" targetRef="Task_ContactClient"/>
+    <bpmn:sequenceFlow id="Flow_RequestAdditionalInfo" sourceRef="Task_ContactClient" targetRef="Task_RequestAdditionalInfo"/>
+    <bpmn:sequenceFlow id="Flow_ProposeSolution" sourceRef="Task_RequestAdditionalInfo" targetRef="Task_ProposeSolution"/>
+    <bpmn:sequenceFlow id="Flow_CheckSolutionAcceptance" sourceRef="Task_ProposeSolution" targetRef="Gateway_SolutionAccepted"/>
+    <bpmn:sequenceFlow id="Flow_CloseTicket" sourceRef="Gateway_SolutionAccepted" targetRef="Task_CloseTicket"/>
+    <bpmn:sequenceFlow id="Flow_EscalateClaim" sourceRef="Gateway_SolutionAccepted" targetRef="Task_EscalateClaim"/>
+    <bpmn:sequenceFlow id="Flow_ManagerReview" sourceRef="Task_EscalateClaim" targetRef="Task_ManagerReview"/>
+    <bpmn:sequenceFlow id="Flow_EndProcess" sourceRef="Task_CloseTicket" targetRef="EndEvent_ProcessComplete"/>
+    <bpmn:sequenceFlow id="Flow_EndProcessEscalation" sourceRef="Task_ManagerReview" targetRef="EndEvent_ProcessComplete"/>
   </bpmn:process>
 
-  <bpmndi:bpmndiagram id="BPMNDiagram_ClaimManagement">
-    <bpmndi:bpmnplane id="BPMNPlane_ClaimManagement" bpmnelement="Process_ClaimManagement">
-      <!-- BPMN Shapes and Coordinates -->
-      <bpmndi:bpmnshape id="Shape_StartEvent_SubmitClaim" bpmnelement="StartEvent_SubmitClaim">
-        <dc:bounds x="100" y="100" width="36" height="36"/>
-      </bpmndi:bpmnshape>
-      <bpmndi:bpmnshape id="Shape_Task_CreateTicket" bpmnelement="Task_CreateTicket">
-        <dc:bounds x="200" y="90" width="100" height="60"/>
-      </bpmndi:bpmnshape>
-      <bpmndi:bpmnshape id="Shape_Task_AssignTicket" bpmnelement="Task_AssignTicket">
-        <dc:bounds x="350" y="90" width="100" height="60"/>
-      </bpmndi:bpmnshape>
-      <bpmndi:bpmnshape id="Shape_Task_AnalyzeClaim" bpmnelement="Task_AnalyzeClaim">
-        <dc:bounds x="500" y="90" width="100" height="60"/>
-      </bpmndi:bpmnshape>
-      <bpmndi:bpmnshape id="Shape_Task_ContactClient" bpmnelement="Task_ContactClient">
-        <dc:bounds x="650" y="90" width="100" height="60"/>
-      </bpmndi:bpmnshape>
-      <bpmndi:bpmnshape id="Shape_Task_ProposeSolution" bpmnelement="Task_ProposeSolution">
-        <dc:bounds x="800" y="90" width="100" height="60"/>
-      </bpmndi:bpmnshape>
-      <bpmndi:bpmnshape id="Shape_Gateway_SolutionAccepted" bpmnelement="Gateway_SolutionAccepted">
-        <dc:bounds x="950" y="100" width="50" height="50"/>
-      </bpmndi:bpmnshape>
-      <bpmndi:bpmnshape id="Shape_Task_CloseTicket" bpmnelement="Task_CloseTicket">
-        <dc:bounds x="1050" y="70" width="100" height="60"/>
-      </bpmndi:bpmnshape>
-      <bpmndi:bpmnshape id="Shape_Task_EscalateClaim" bpmnelement="Task_EscalateClaim">
-        <dc:bounds x="1050" y="150" width="100" height="60"/>
-      </bpmndi:bpmnshape>
-      <bpmndi:bpmnshape id="Shape_EndEvent_ProcessComplete" bpmnelement="EndEvent_ProcessComplete">
-        <dc:bounds x="1200" y="100" width="36" height="36"/>
-      </bpmndi:bpmnshape>
-    </bpmndi:bpmnplane>
-  </bpmndi:bpmndiagram>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_ClaimManagement_Extended">
+    <bpmndi:BPMNPlane id="BPMNPlane_ClaimManagement_Extended" bpmnElement="Process_ClaimManagement_Extended">
+      <bpmndi:BPMNShape id="Shape_StartEvent_SubmitClaim" bpmnElement="StartEvent_SubmitClaim">
+        <dc:Bounds x="100" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CreateTicket" bpmnElement="Task_CreateTicket">
+        <dc:Bounds x="200" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_AssignTicket" bpmnElement="Task_AssignTicket">
+        <dc:Bounds x="350" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_VerifyDocuments" bpmnElement="Task_VerifyDocuments">
+        <dc:Bounds x="500" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_AnalyzeClaim" bpmnElement="Task_AnalyzeClaim">
+        <dc:Bounds x="650" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CheckFraud" bpmnElement="Task_CheckFraud">
+        <dc:Bounds x="800" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_FraudDetected" bpmnElement="Gateway_FraudDetected">
+        <dc:Bounds x="950" y="100" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_RejectClaim" bpmnElement="Task_RejectClaim">
+        <dc:Bounds x="1050" y="50" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ContactClient" bpmnElement="Task_ContactClient">
+        <dc:Bounds x="1050" y="150" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_RequestAdditionalInfo" bpmnElement="Task_RequestAdditionalInfo">
+        <dc:Bounds x="1200" y="150" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ProposeSolution" bpmnElement="Task_ProposeSolution">
+        <dc:Bounds x="1350" y="150" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_SolutionAccepted" bpmnElement="Gateway_SolutionAccepted">
+        <dc:Bounds x="1500" y="160" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CloseTicket" bpmnElement="Task_CloseTicket">
+        <dc:Bounds x="1650" y="120" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_EscalateClaim" bpmnElement="Task_EscalateClaim">
+        <dc:Bounds x="1650" y="220" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_ManagerReview" bpmnElement="Task_ManagerReview">
+        <dc:Bounds x="1800" y="220" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_ProcessComplete" bpmnElement="EndEvent_ProcessComplete">
+        <dc:Bounds x="2000" y="160" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <!-- Sequence Flow connections -->
+      <bpmndi:BPMNEdge id="FlowEdge_TicketCreation" bpmnElement="Flow_TicketCreation">
+        <di:waypoint x="136" y="118"/>
+        <di:waypoint x="200" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_AssignTicket" bpmnElement="Flow_AssignTicket">
+        <di:waypoint x="300" y="120"/>
+        <di:waypoint x="350" y="120"/>
+      </bpmndi:BPMNEdge>
+      <!-- Add similar <bpmndi:BPMNEdge> for all flows -->
+<bpmndi:BPMNEdge id="FlowEdge_TicketCreation" bpmnElement="Flow_TicketCreation">
+        <di:waypoint x="136" y="118"/>
+        <di:waypoint x="200" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_AssignTicket" bpmnElement="Flow_AssignTicket">
+        <di:waypoint x="300" y="120"/>
+        <di:waypoint x="350" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_VerifyDocuments" bpmnElement="Flow_VerifyDocuments">
+        <di:waypoint x="450" y="120"/>
+        <di:waypoint x="500" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_AnalyzeClaim" bpmnElement="Flow_AnalyzeClaim">
+        <di:waypoint x="600" y="120"/>
+        <di:waypoint x="650" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_CheckFraud" bpmnElement="Flow_CheckFraud">
+        <di:waypoint x="750" y="120"/>
+        <di:waypoint x="800" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_FraudDecision" bpmnElement="Flow_FraudDecision">
+        <di:waypoint x="850" y="120"/>
+        <di:waypoint x="950" y="125"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_RejectClaim" bpmnElement="Flow_RejectClaim">
+        <di:waypoint x="975" y="125"/>
+        <di:waypoint x="1050" y="80"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_ContactClient" bpmnElement="Flow_ContactClient">
+        <di:waypoint x="975" y="125"/>
+        <di:waypoint x="1050" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_RequestAdditionalInfo" bpmnElement="Flow_RequestAdditionalInfo">
+        <di:waypoint x="1150" y="180"/>
+        <di:waypoint x="1200" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_ProposeSolution" bpmnElement="Flow_ProposeSolution">
+        <di:waypoint x="1300" y="180"/>
+        <di:waypoint x="1350" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_CheckSolutionAcceptance" bpmnElement="Flow_CheckSolutionAcceptance">
+        <di:waypoint x="1450" y="180"/>
+        <di:waypoint x="1500" y="185"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_CloseTicket" bpmnElement="Flow_CloseTicket">
+        <di:waypoint x="1525" y="185"/>
+        <di:waypoint x="1650" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_EscalateClaim" bpmnElement="Flow_EscalateClaim">
+        <di:waypoint x="1525" y="185"/>
+        <di:waypoint x="1650" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="FlowEdge_ManagerReview" bpmnElement="Flow_ManagerReview">
+        <di:waypoint x="1700" y="250"/>
+        <di:waypoint x="1800" y="250"/>
+      </bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="FlowEdge_EndProcess" bpmnElement="Flow_EndProcess">
+        <di:waypoint x="1750" y="150"/>
+        <di:waypoint x="2000" y="200"/>
+</bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+
+
+  </bpmndi:BPMNDiagram>
+
+
 </bpmn:definitions>
