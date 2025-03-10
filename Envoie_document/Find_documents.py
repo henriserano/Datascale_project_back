@@ -8,6 +8,8 @@ import os
 from threading import Lock
 import json
 from flask_cors import CORS
+from services.similarity import preload_embeddings, find
+
 
 app = Flask(__name__)
 CORS(app)
@@ -40,57 +42,7 @@ model = AutoModel.from_pretrained(MODEL_NAME)
 cache_lock = Lock()
 cached_embeddings = []
 
-def preload_embeddings():
-    """Précharge les données de DynamoDB dans une structure locale."""
-    global cached_embeddings
-    print("Préchargement des embeddings depuis DynamoDB...")
-    response = table.scan()
-    items = response.get("Items", [])
-    while "LastEvaluatedKey" in response:
-        response = table.scan(ExclusiveStartKey=response["LastEvaluatedKey"])
-        items.extend(response.get("Items", []))
 
-    cached_embeddings = [
-        {
-            "id_vector": item["id_vector"],
-            # Convertir directement les Decimal en float
-            "embedding": np.array([float(x) for x in item["embedding"]]),
-            "metadata": json.loads(item["metadata"]),
-            "text": item["text"]
-        }
-        for item in items
-    ]
-    print(f"{len(cached_embeddings)} embeddings préchargés.")
-
-
-def vectorize_text(text):
-    """Vectorise une phrase avec BERT."""
-    inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
-    with torch.no_grad():
-        outputs = model(**inputs)
-    embedding = outputs.last_hidden_state.mean(dim=1).numpy()
-    return embedding.flatten()
-
-def cosine_similarity(vec1, vec2):
-    """Calcule la similarité cosinus entre deux vecteurs."""
-    return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
-
-def find(text):
-    """Trouve les documents les plus pertinents pour un texte donné."""
-    try:
-        input_vector = vectorize_text(text)
-        with cache_lock:
-            best_score = -1
-            best_document = None
-            for item in cached_embeddings:
-                similarity = cosine_similarity(input_vector, item["embedding"])
-                if similarity > MIN_SIMILARITY and similarity > best_score:
-                    best_score = similarity
-                    best_document = item
-        return best_document, best_score
-    except Exception as e:
-        print(f"Erreur dans la fonction find : {e}")
-        return None, None
 
 def fetch_s3_content(key):
     """Récupère le contenu d'un fichier depuis le bucket S3."""

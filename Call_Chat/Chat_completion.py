@@ -15,7 +15,8 @@ from io import StringIO, BytesIO
 from services.extract_text import extract_text_from_bucket_discussion
 from services.bucket_services import upload_to_s3
 from services.dynamodb import push_request_dynamodb  ,get_item_dynanodb
-
+from services.from_discussion_json import from_discussion_to_json
+from services.call_LLM import call_llm
 
 # Charger les variables d'environnement
 load_dotenv()
@@ -182,81 +183,6 @@ def generate_json():
     push_request_dynamodb(formatted_json)
 
     return jsonify({"generated_json": str(formatted_json)})
-
-def call_llm(messages):
-    """
-    Appelle le modèle LLM en mode synchrone.
-    """
-    model = "mistral-tiny"
-    chat_response = client.chat.complete(
-        model=model,
-        messages=messages,
-    )
-    return chat_response.choices[0].message.content
-
-def from_discussion_to_json(conversation_id, discussion,id_user,id_sector):
-    """
-    Génère un JSON structuré à partir de l'historique de conversation.
-    """
-    sector_data = get_item_dynanodb('Sector', {'ID_Sector': id_sector})["Process_Model"] 
-    criteria_selection = json.loads(str(sector_data))["criteria"]    
-    text_from_bucket = extract_text_from_bucket_discussion("process-boost",id_user,conversation_id)
-    date_today =  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(date_today)
-    summarized_discussion = (
-        discussion[:5000] + "..." if len(discussion) > 5000 else discussion
-    )
-    print(f"Summarized discussion length: {len(summarized_discussion)}")
-
-    # Truncate text from bucket
-    truncated_bucket_text = {}
-    for key, text in text_from_bucket.items():
-        truncated_bucket_text[key] = text[:1000] + "..." if len(text) > 1000 else text
-    prompt_text = f"""Votre tâche est d'analyser une discussion donnée ainsi que les documents fournis pour générer un fichier JSON.
-Le JSON doit contenir les éléments suivants :
-
-Le nom du service auquel appartient le processus.
-Un titre court et explicite qui décrit une analyse du candidat.
-Une description détaillée d'une analyse globale de la discussion et des documents, permettant de prendre pleinement conscience de la discussion.
-Une analyse des différents critères définis lors de la création du processus métier. Chaque critère doit inclure le nom et le type de source de données (discussion ou document).
-Veuillez respecter le format suivant :
-{{
-"Sector": "",
-"Title": "",
-"Description": "",
-"SubmittedOn": "{date_today}",
-"UserID": "{id_user}",
-"ID_Conversation": "{conversation_id}",
-"name of criteria 1": "",
-…,
-"name of criteria n": "",
-"Statut": "pending"
-}}
-
-Voici la discussion que vous devez analyser :
-{summarized_discussion}
-
-Détail du contenu des documents fournis par l'utilisateur :
-{truncated_bucket_text}
-
-Les critères définis pour l'analyse sont :
-{criteria_selection}
-
-Générez le fichier JSON en respectant le format et en remplissant les champs avec les informations pertinentes extraites de la discussion et des documents fournis."""
-
-    messages = [{
-        "role": "user",
-        "content": prompt_text,
-    }]
-    chat_response = client.agents.complete(
-        agent_id="ag:e559a37b:20241205:generation-json-from-metier:be347c70",
-        messages=messages,
-        response_format={"type": "json_object"}
-    )
-    json_data = json.loads(chat_response.choices[0].message.content)
-    print("JSON DATA : ",json_data)
-    return json_data
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5003, debug=True)
