@@ -37,21 +37,6 @@ model = AutoModel.from_pretrained(MODEL_NAME)
 # Définir un séparateur de texte
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 
-def test_sts_connection():
-    """Test de connexion à STS pour valider les clés AWS."""
-    try:
-        sts_client = session.client("sts")
-        response = sts_client.get_caller_identity()
-        print("Connexion réussie avec STS !")
-        print("Account:", response['Account'])
-        print("UserId:", response['UserId'])
-        print("ARN:", response['Arn'])
-    except NoCredentialsError:
-        print("Erreur : Aucune clé d'accès AWS n'a été trouvée.")
-    except PartialCredentialsError:
-        print("Erreur : Les clés d'accès AWS sont incomplètes.")
-    except Exception as e:
-        print("Erreur lors de la connexion à STS :", e)
 
 def list_files_in_bucket(bucket_name):
     """Liste les fichiers dans le bucket S3."""
@@ -128,9 +113,6 @@ def embed_text(texts):
         return []
 
 if __name__ == "__main__":
-    # Test de la connexion STS
-    test_sts_connection()
-
     # Liste des fichiers dans le bucket S3
     files_in_bucket = list_files_in_bucket(bucket_name)
     if not files_in_bucket:

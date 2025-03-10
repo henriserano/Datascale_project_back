@@ -43,13 +43,11 @@ def from_discussion_to_json(agent_id,discussion):
         agent_id (_type_): _description_
         prompt_text (_type_): _description_
     """
-    prompt_text = """En tant qu'assistant conversationnel, ta tâche est d'analyser une discussion donnée afin de générer un fichier JSON qui communique clairement une problématique client.
+    prompt_text = """En tant qu'assistant conversationnel, ta tâche est d'analyser une discussion donnée afin de générer un fichier JSON.
 
     Le JSON doit inclure les éléments suivants :
     1. Le nom du service auquel appartient la problématique.
     2. Un titre court et explicite de la problématique du collaborateur.
-    3. Une description détaillée du problème.
-    4. Un niveau d'urgence entre 1 et 5, 1 étant peu urgent et 5 étant très urgent.
 
     Voici le format du JSON à respecter :
     "
