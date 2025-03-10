@@ -113,7 +113,7 @@ Utilise ce format pour guider chaque conversation et assure-toi d'informer le co
 
     return jsonify({
         "conversation_id": conversation_id,
-        "assistant_response": response
+        "assistant_response": f"Bienvenue sur le service {titre_secteur}, que puis-je faire pour vous aider ?"
     })
 
 @app.route('/api/send_message', methods=['POST'])
